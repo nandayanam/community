@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SJR Bluewaters Community Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{
+  background:linear-gradient(rgba(240,249,255,0.92),rgba(240,249,255,0.92)),
+  url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1600&auto=format&fit=crop') center/cover fixed;
+  min-height:100vh;
+}
+
+/* ── PORTAL SHELL ───────────────────────── */
+.portal{max-width:1280px;margin:30px auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.13);}
+
+/* ── TOPBAR ─────────────────────────────── */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid #e5e7eb;background:#fff;}
+.topbar-brand{}
+.topbar-brand .name{font-size:13px;font-weight:800;color:#0369a1;letter-spacing:.04em;}
+.topbar-brand .loc{font-size:11px;color:#94a3b8;margin-top:1px;}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.supabase-indicator{font-size:11px;font-weight:600;padding:5px 10px;border-radius:8px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+.supabase-indicator.error{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
+.supabase-indicator.loading{background:#fffbeb;color:#92400e;border-color:#fde68a;}
+.btn{background:#0369a1;color:#fff;border:none;padding:9px 18px;border-radius:11px;font-weight:700;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;}
+.btn:hover{background:#0284c7;}
+.btn-dark{background:#111827;}
+.btn-dark:hover{background:#1f2937;}
+.btn-red{background:#dc2626;}
+.btn-red:hover{background:#b91c1c;}
+.btn-sm{padding:6px 13px;font-size:12px;}
+
+/* ── MAIN NAV ───────────────────────────── */
+.main-nav{display:flex;gap:2px;padding:12px 20px;background:#f8fafc;border-bottom:1px solid #e5e7eb;overflow-x:auto;}
+.nav-tab{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:12px;font-weight:600;font-size:13px;color:#64748b;cursor:pointer;white-space:nowrap;border:none;background:none;font-family:'Inter',sans-serif;transition:all .15s;}
+.nav-tab:hover{background:#e0f2fe;color:#0369a1;}
+.nav-tab.active{background:#0369a1;color:#fff;}
+.nav-tab .nic{font-size:17px;}
+
+/* ── PAGE CONTENT ───────────────────────── */
+.page{display:none;padding:28px;}
+.page.active{display:block;}
+
+/* ── HOME PAGE ──────────────────────────── */
+.home-welcome-slim{
+  background:linear-gradient(120deg,#0369a1 0%,#0891b2 70%,#06b6d4 100%);
+  color:#fff;border-radius:16px;padding:18px 24px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;overflow:hidden;
+}
+.welcome-label{font-size:10px;font-weight:700;letter-spacing:.14em;color:#bae6fd;text-transform:uppercase;margin-bottom:2px;}
+.welcome-title{font-size:24px;font-weight:800;line-height:1.15;margin-bottom:2px;}
+.welcome-sub{font-size:12px;color:#bae6fd;}
+.welcome-wave{font-size:48px;opacity:.22;line-height:1;flex-shrink:0;}
+.home-stats-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.stats-bar-chip{border-radius:16px;padding:18px 12px;text-align:center;flex:1;min-width:80px;box-shadow:0 4px 15px rgba(0,0,0,.12);transition:transform .2s,box-shadow .2s;cursor:pointer;color:#fff;position:relative;overflow:hidden;}
+.stats-bar-chip:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.18);}
+.stats-bar-chip::after{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.1);}
+.stats-bar-chip .sv{font-size:28px;font-weight:900;line-height:1;}
+.stats-bar-chip .sl{font-size:10px;margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.85;}
+
+.home-grid{display:grid;grid-template-columns:1.3fr 0.7fr;gap:20px;}
+@media(max-width:900px){.home-grid{grid-template-columns:1fr;}}
+
+.card{background:#fff;border-radius:18px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,.04);margin-bottom:20px;}
+.card h2{font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #f1f5f9;}
+.card-row:last-child{border-bottom:none;}
+.card-row h4{font-size:14px;font-weight:600;color:#1f2937;margin-bottom:2px;}
+.card-row p{font-size:12px;color:#6b7280;}
+
+.ann-dot{width:8px;height:8px;border-radius:50%;background:#0369a1;flex-shrink:0;margin-top:5px;}
+.ann-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #f1f5f9;}
+.ann-row:last-child{border-bottom:none;}
+.ann-text{font-size:13px;color:#374151;margin-bottom:3px;}
+.ann-meta{font-size:11px;color:#9ca3af;}
+
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;}
+.pill-blue{background:#dbeafe;color:#1d4ed8;}
+.pill-green{background:#dcfce7;color:#15803d;}
+.pill-orange{background:#ffedd5;color:#c2410c;}
+.pill-teal{background:#ccfbf1;color:#0f766e;}
+.pill-red{background:#fee2e2;color:#b91c1c;}
+
+/* Quick tiles */
+.quick-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;margin-top:0;}
+@media(max-width:700px){.quick-tiles{grid-template-columns:repeat(4,1fr);}}
+.qtile{border-radius:16px;padding:16px 8px;text-align:center;cursor:pointer;border:1px solid transparent;transition:transform .15s,box-shadow .15s;}
+.qtile:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.09);}
+.qtile .qi{font-size:26px;margin-bottom:6px;}
+.qtile .ql{font-size:11px;font-weight:700;}
+
+.blocks-wrap{display:flex;flex-wrap:wrap;gap:7px;}
+.block-chip{background:#f0f9ff;border:1px solid #bae6fd;color:#0369a1;border-radius:8px;padding:4px 11px;font-size:12px;font-weight:600;}
+
+/* ── SOP PAGE ───────────────────────────── */
+.sop-toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.search-box{flex:1;min-width:180px;border:1px solid #e5e7eb;border-radius:10px;padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;outline:none;}
+.search-box:focus{border-color:#0369a1;}
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+.fbtn{font-size:11px;padding:5px 13px;border-radius:99px;font-weight:700;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.fbtn.active{background:#0369a1;color:#fff;border-color:#0369a1;}
+.fbtn:hover:not(.active){background:#f0f9ff;color:#0369a1;border-color:#bae6fd;}
+
+.sop-list{display:flex;flex-direction:column;gap:10px;}
+.sop-card{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px 18px;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.sop-card:hover{border-color:#0369a1;box-shadow:0 2px 12px rgba(3,105,161,.1);}
+.sop-ico{font-size:26px;flex-shrink:0;}
+.sop-info{flex:1;}
+.sop-title{font-size:14px;font-weight:700;color:#1e3a5f;margin-bottom:5px;}
+.sop-meta-row{display:flex;gap:8px;align-items:center;}
+.sop-updated{font-size:11px;color:#9ca3af;}
+.sop-chevron{color:#cbd5e1;font-size:18px;flex-shrink:0;}
+.sop-empty{text-align:center;padding:48px;color:#94a3b8;}
+.sop-empty .ei{font-size:44px;margin-bottom:12px;}
+.sop-loading{text-align:center;padding:36px;color:#94a3b8;font-size:14px;}
+
+/* ── SOP VIEWER MODAL ───────────────────── */
+#sopModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;justify-content:center;align-items:center;padding:20px;}
+#sopModal.open{display:flex;}
+.sop-modal-box{width:100%;max-width:980px;height:90vh;background:#fff;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.3);}
+.sop-modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
+.sop-modal-title{font-size:16px;font-weight:700;color:#1e3a5f;display:flex;align-items:center;gap:10px;}
+.sop-modal-meta{padding:10px 22px;border-bottom:1px solid #f1f5f9;display:flex;gap:10px;align-items:center;flex-shrink:0;background:#f8fafc;}
+.sop-modal-body{flex:1;overflow:auto;padding:28px 30px;line-height:1.8;color:#374151;font-size:14px;}
+.sop-modal-body h3{font-size:15px;font-weight:700;color:#1e3a5f;margin:18px 0 8px;}
+.sop-modal-body h3:first-child{margin-top:0;}
+.sop-modal-body ul{padding-left:20px;margin-bottom:12px;}
+.sop-modal-body ul li{margin-bottom:4px;}
+.sop-modal-body p{margin-bottom:10px;}
+.sop-modal-body .note{background:#eff6ff;border-left:3px solid #0369a1;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;color:#1d4ed8;margin:14px 0;}
+.sop-pdf-frame{width:100%;height:100%;border:none;}
+
+/* ── ADMIN MODAL ────────────────────────── */
+#adminModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto;}
+#adminModal.open{display:flex;}
+.admin-box{width:100%;max-width:1000px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);margin:auto;}
+.admin-header{background:#111827;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;}
+.admin-header h2{color:#fff;font-size:16px;font-weight:700;}
+.admin-tabs{display:flex;background:#1f2937;padding:0 16px;gap:2px;}
+.atab{font-size:12px;padding:9px 14px;font-weight:700;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;border-radius:8px 8px 0 0;}
+.atab.active{background:#f8fafc;color:#111827;}
+.admin-body{padding:22px;background:#f8fafc;}
+.asection{display:none;}
+.asection.active{display:block;}
+.form-label{font-size:10px;font-weight:700;color:#6b7280;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:6px;}
+.form-input{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-size:13px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;}
+.form-input:focus{border-color:#0369a1;}
+.form-textarea{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-size:13px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;resize:vertical;min-height:80px;}
+.form-select{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-size:13px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;color:#374151;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-submit{background:#0369a1;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:'Inter',sans-serif;}
+.form-submit:hover{background:#0284c7;}
+
+/* Upload zone */
+.upload-zone{border:2px dashed #bae6fd;border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:#f0f9ff;transition:background .2s;margin-bottom:10px;}
+.upload-zone:hover{background:#e0f2fe;}
+.upload-zone input{display:none;}
+.upload-zone .uz-icon{font-size:32px;margin-bottom:8px;}
+.upload-zone p{font-size:13px;color:#0369a1;font-weight:600;margin-bottom:2px;}
+.upload-zone span{font-size:11px;color:#6b7280;}
+.file-preview{display:none;align-items:center;gap:10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+.file-preview-name{font-size:12px;color:#0369a1;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Content tab switcher */
+.content-tabs{display:flex;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.ctab{flex:1;padding:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.ctab.active{background:#0369a1;color:#fff;}
+.ctab:not(.active){background:#fff;color:#6b7280;}
+
+/* Admin list */
+.alist-item{background:#fff;border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border:1px solid #e5e7eb;}
+.alist-name{font-size:13px;color:#374151;flex:1;}
+.alist-actions{display:flex;gap:10px;flex-shrink:0;}
+.aact-edit{font-size:11px;color:#3b82f6;font-weight:700;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.aact-del{font-size:11px;color:#ef4444;font-weight:700;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+.aact-arc{font-size:11px;color:#f97316;font-weight:700;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+
+/* ── OTHER SECTION STYLES ───────────────── */
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:700px){.panel-grid{grid-template-columns:1fr;}}
+.info-box{background:#fff;padding:18px;border-radius:16px;border:1px solid #e5e7eb;}
+.info-box h3{font-size:14px;font-weight:700;color:#1e3a5f;margin-bottom:8px;}
+.info-box p{font-size:13px;color:#4b5563;line-height:1.8;}
+
+.committee-card{background:#fff;padding:18px;border-radius:16px;margin-bottom:12px;border:1px solid #e5e7eb;}
+.committee-card h3{font-size:14px;font-weight:700;color:#1e3a5f;margin-bottom:6px;}
+.committee-card p{font-size:13px;color:#4b5563;margin-bottom:8px;}
+.join-tag{background:#ecfdf5;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:600;color:#065f46;}
+
+.expand-box{background:#fff;border:1px solid #e5e7eb;border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.expand-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;cursor:pointer;font-weight:700;font-size:15px;color:#1e3a5f;}
+.expand-header:hover{background:#f8fafc;}
+.expand-content{display:none;padding:0 18px 18px;color:#4b5563;line-height:1.9;font-size:13px;}
+.expand-content.open{display:block;}
+.plus-icon{font-size:22px;color:#0369a1;transition:transform .2s;}
+.plus-icon.open{transform:rotate(45deg);}
+
+.amenity-img-placeholder{margin-top:12px;height:160px;border-radius:14px;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#94a3b8;font-size:13px;font-weight:600;gap:6px;border:2px dashed #bae6fd;}
+
+.mc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:900px){.mc-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.mc-grid{grid-template-columns:1fr 1fr;}}
+.mc-card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;padding:18px;text-align:center;}
+.mc-photo{height:110px;background:linear-gradient(135deg,#dbeafe,#eff6ff);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:12px;}
+.mc-name{font-size:14px;font-weight:700;color:#1e3a5f;margin-bottom:4px;}
+.mc-role{font-size:12px;color:#0369a1;font-weight:600;margin-bottom:6px;}
+.mc-block{font-size:11px;color:#6b7280;margin-bottom:6px;}
+.mc-focus{font-size:11px;color:#4b5563;line-height:1.5;}
+
+.emergency-alert{background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:16px 20px;margin-bottom:18px;}
+.emergency-alert p{font-size:13px;font-weight:700;color:#b91c1c;margin-bottom:10px;}
+.emergency-alert button{width:100%;background:#dc2626;color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;}
+
+.section-title{font-size:22px;font-weight:800;color:#1e3a5f;margin-bottom:4px;}
+.section-sub{font-size:13px;color:#64748b;margin-bottom:20px;}
+
+/* ── SUPABASE CONFIG BANNER ─────────────── */
+.config-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:16px 20px;margin-bottom:20px;}
+.config-banner h3{font-size:14px;font-weight:700;color:#92400e;margin-bottom:8px;}
+.config-banner p{font-size:12px;color:#78350f;line-height:1.7;margin-bottom:10px;}
+.config-banner code{background:#fef3c7;padding:2px 7px;border-radius:5px;font-family:monospace;font-size:12px;}
+.config-fields{display:flex;gap:8px;flex-wrap:wrap;}
+.config-fields input{flex:1;min-width:200px;border:1px solid #fde68a;border-radius:8px;padding:7px 11px;font-size:12px;font-family:'Inter',sans-serif;background:#fff;}
+.config-fields button{background:#0369a1;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+
+@media(max-width:900px){
+  body{background:#f0f9ff;}
+  .portal{margin:0;border-radius:0;box-shadow:none;}
+  .home-welcome-slim{padding:14px 18px;}
+  .welcome-title{font-size:20px;}
+  .home-stats-bar{gap:8px;}
+  .page{padding:16px;}
+  .quick-tiles{grid-template-columns:repeat(4,1fr);}
+  .mc-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="portal">
+
+  <!-- ── TOPBAR ──────────────────────────── -->
+  <!-- Hidden elements still needed by JS -->
+  <div style="display:none;">
+    <div id="dbStatus"></div>
+  </div>
+
+  <!-- ── MAIN NAV ────────────────────────── -->
+  <div class="main-nav" style="display:none;">
+    <button class="nav-tab active" id="tab-home"       onclick="showPage('home')"><span class="nic">🏡</span> Home</button>
+    <button class="nav-tab"        id="tab-sops"       onclick="showPage('sops')"><span class="nic">📋</span> SOPs</button>
+    <button class="nav-tab"        id="tab-mc"         onclick="showPage('mc')"><span class="nic">👥</span> MC Members</button>
+    <button class="nav-tab"        id="tab-committees" onclick="showPage('committees')"><span class="nic">🤝</span> Committees</button>
+    <button class="nav-tab"        id="tab-emergency"  onclick="showPage('emergency')"><span class="nic">🚨</span> Emergency</button>
+    <button class="nav-tab"        id="tab-helpers"    onclick="showPage('helpers')"><span class="nic">🩺</span> Community Helpers</button>
+    <button class="nav-tab"        id="tab-amenities"  onclick="showPage('amenities')"><span class="nic">🏊</span> Amenities</button>
+    <button class="nav-tab"        id="tab-events"     onclick="showPage('events')"><span class="nic">🎉</span> Events</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       HOME PAGE
+  ════════════════════════════════════════ -->
+  <div class="page active" id="page-home">
+
+    <!-- Welcome banner with admin controls -->
+    <div class="home-welcome-slim" style="border-radius:0;">
+      <div class="home-welcome-text">
+        <div class="welcome-label">Welcome to</div>
+        <div class="welcome-title">SJR Bluewaters</div>
+        <div class="welcome-sub">Your one-stop portal for SOPs, emergency contacts, events &amp; community services</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <button id="backHomeBtn" onclick="showPage('home')" style="display:none;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);font-size:12px;font-weight:600;color:#fff;cursor:pointer;">← Home</button>
+        <div id="dbStatus" style="display:none;"></div>
+        <button class="btn btn-dark" id="adminAccessBtn" onclick="openAdmin()" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);color:#fff;">🔐 Admin Login</button>
+        <button id="logoutBtn" onclick="logoutAdmin()" style="display:none;padding:8px 16px;background:rgba(220,38,38,.8);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">Logout</button>
+      </div>
+    </div>
+
+    <!-- Quick access tiles -->
+    <!-- Stats bar: Blocks, SOPs, MC Members, Committees — clickable -->
+    <div class="home-stats-bar">
+      <div class="stats-bar-chip" onclick="showPage('mc')" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);">
+        <div class="sv">12</div><div class="sl">Blocks</div>
+      </div>
+      <div class="stats-bar-chip" onclick="showPage('sops')" style="background:linear-gradient(135deg,#059669,#34d399);">
+        <div class="sv" id="home-sop-count">—</div><div class="sl">SOPs</div>
+      </div>
+      <div class="stats-bar-chip" onclick="showPage('mc')" style="background:linear-gradient(135deg,#7e22ce,#a855f7);">
+        <div class="sv">4</div><div class="sl">MC Members</div>
+      </div>
+      <div class="stats-bar-chip" onclick="showPage('committees')" style="background:linear-gradient(135deg,#ea580c,#fb923c);">
+        <div class="sv">4</div><div class="sl">Committees</div>
+      </div>
+    </div>
+
+    <!-- Quick tiles -->
+    <div class="quick-tiles">
+      <div class="qtile" style="background:#eff6ff;border-color:#dbeafe;" onclick="showPage('sops')">
+        <div class="qi">📋</div><div class="ql" style="color:#1d4ed8;">SOPs</div>
+      </div>
+      <div class="qtile" style="background:#f0f9ff;border-color:#bae6fd;" onclick="showPage('mc')">
+        <div class="qi">👥</div><div class="ql" style="color:#0369a1;">MC Members</div>
+      </div>
+      <div class="qtile" style="background:#f8fafc;border-color:#e2e8f0;" onclick="showPage('committees')">
+        <div class="qi">🤝</div><div class="ql" style="color:#475569;">Committees</div>
+      </div>
+      <div class="qtile" style="background:#fff7ed;border-color:#fed7aa;" onclick="showPage('emergency')">
+        <div class="qi">🚨</div><div class="ql" style="color:#c2410c;">Emergency</div>
+      </div>
+      <div class="qtile" style="background:#faf5ff;border-color:#e9d5ff;" onclick="showPage('events')">
+        <div class="qi">🎉</div><div class="ql" style="color:#7e22ce;">Events</div>
+      </div>
+      <div class="qtile" style="background:#f0fdf4;border-color:#bbf7d0;" onclick="showPage('helpers')">
+        <div class="qi">🩺</div><div class="ql" style="color:#15803d;">Community Helpers</div>
+      </div>
+      <div class="qtile" style="background:#ecfeff;border-color:#a5f3fc;" onclick="showPage('amenities')">
+        <div class="qi">🏊</div><div class="ql" style="color:#0e7490;">Amenities</div>
+      </div>
+    </div>
+
+    <!-- Home grid: left=announcements+SOPs, right=blocks+events -->
+    <div class="home-grid">
+      <div>
+        <!-- Announcements (dynamic) -->
+        <div class="card">
+          <h2>📢 Announcements <span class="pill pill-orange" style="margin-left:4px;display:none;" id="ann-badge">0 New</span></h2>
+          <div id="ann-list"><div class="sop-loading">Loading…</div></div>
+        </div>
+
+        <!-- Recent SOPs -->
+        <div class="card">
+          <h2>📋 SOP Library <button class="btn btn-sm" onclick="showPage('sops')" style="margin-left:auto;font-size:11px;padding:5px 12px;">View All →</button></h2>
+          <div id="home-sop-list">
+            <div class="sop-loading">Loading SOPs…</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Events -->
+        <div class="card">
+          <h2>🎉 Upcoming Events</h2>
+          <div class="card-row">
+            <div>
+              <h4>Children's Festival</h4>
+              <p>May 18 · Clubhouse Lawn · Meera Iyer</p>
+            </div>
+            <button class="btn btn-sm">RSVP</button>
+          </div>
+          <div class="card-row">
+            <div>
+              <h4>Weekend Yoga</h4>
+              <p>Every Saturday · Garden Area · Vivek Kumar</p>
+            </div>
+            <button class="btn btn-sm">RSVP</button>
+          </div>
+          <div class="card-row">
+            <div>
+              <h4>AGM 2025</h4>
+              <p>May 18 · Clubhouse · All residents</p>
+            </div>
+            <button class="btn btn-sm">RSVP</button>
+          </div>
+        </div>
+
+        <!-- Blocks -->
+        <div class="card">
+          <h2>🏢 Community Blocks</h2>
+          <div class="blocks-wrap">
+            <span class="block-chip">Alston</span><span class="block-chip">Boston</span><span class="block-chip">Clarence</span>
+            <span class="block-chip">Crescent</span><span class="block-chip">Greenwich</span><span class="block-chip">Goldcoast</span>
+            <span class="block-chip">Hamstead A</span><span class="block-chip">Hamstead B</span><span class="block-chip">Hamstead AB</span>
+            <span class="block-chip">Kensington</span><span class="block-chip">Mayfair</span><span class="block-chip">Primrose</span>
+          </div>
+        </div>
+
+        <!-- Emergency quick card -->
+        <div class="card" style="background:linear-gradient(135deg,#fff1f2,#fff5f5);">
+          <h2>🚨 Emergency Numbers</h2>
+          <div class="card-row"><div><h4>Police</h4><p>Dial 100</p></div></div>
+          <div class="card-row"><div><h4>Ambulance</h4><p>Dial 108</p></div></div>
+          <div class="card-row"><div><h4>Fire</h4><p>Dial 101</p></div></div>
+          <div class="card-row"><div><h4>Security Gate</h4><p>+91 98440 00001</p></div></div>
+          <button class="btn" style="width:100%;margin-top:12px;background:#dc2626;" onclick="showPage('emergency')">View All Emergency Contacts →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SOPs PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-sops">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">📋 SOP Library</div>
+    <div class="section-sub">Tap any SOP to read it on screen — no downloads needed</div>
+
+    <!-- Supabase config banner (shown only when not configured) -->
+    <div class="config-banner" id="configBanner" style="display:none;">
+      <h3>🔗 Connect to Supabase to enable live SOP management</h3>
+      <p>Once connected, admins can upload PDFs or write SOPs — they appear here instantly with no HTML edits needed. Create a free project at <code>supabase.com</code>, then enter your credentials below.</p>
+      <div class="config-fields">
+        <input type="text" id="cfgUrl"  placeholder="Supabase Project URL  (https://xxx.supabase.co)" />
+        <input type="text" id="cfgKey"  placeholder="Supabase anon/public key" />
+        <button onclick="saveSupabaseConfig()">Connect</button>
+      </div>
+    </div>
+
+    <div class="sop-toolbar">
+      <input class="search-box" type="text" id="sopSearch" placeholder="🔍  Search SOPs…" oninput="renderSOPs()">
+      <button class="btn btn-sm" onclick="loadSOPs()">↻ Refresh</button>
+    </div>
+    <div class="filter-row" id="catFilters">
+      <button class="fbtn active" data-cat="All" onclick="setCat(this)">All</button>
+      <button class="fbtn" data-cat="Security" onclick="setCat(this)">Security</button>
+      <button class="fbtn" data-cat="Parking" onclick="setCat(this)">Parking</button>
+      <button class="fbtn" data-cat="Amenities" onclick="setCat(this)">Amenities</button>
+      <button class="fbtn" data-cat="General" onclick="setCat(this)">General</button>
+      <button class="fbtn" data-cat="Housekeeping" onclick="setCat(this)">Housekeeping</button>
+      <button class="fbtn" data-cat="Admin" onclick="setCat(this)">Admin</button>
+    </div>
+    <div class="sop-list" id="sopListContainer">
+      <div class="sop-loading">⏳ Loading SOPs…</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MC MEMBERS PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-mc">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">👥 Managing Committee</div>
+    <div class="section-sub">Your elected committee for 2024–25</div>
+    <div class="mc-grid">
+      <div class="mc-card"><div class="mc-photo">👨‍💼</div><div class="mc-name">Rajesh Nair</div><div class="mc-role">President</div><div class="mc-block">Block: Kensington</div><div class="mc-focus">Governance, Vendor Management, Resident Coordination</div></div>
+      <div class="mc-card"><div class="mc-photo">👩‍💼</div><div class="mc-name">Priya Menon</div><div class="mc-role">Vice President</div><div class="mc-block">Block: Mayfair</div><div class="mc-focus">Cultural Activities, Volunteer Coordination</div></div>
+      <div class="mc-card"><div class="mc-photo">👨‍💼</div><div class="mc-name">Arun Kumar</div><div class="mc-role">Treasurer</div><div class="mc-block">Block: Boston</div><div class="mc-focus">Finance, Budget Planning, Audit Support</div></div>
+      <div class="mc-card"><div class="mc-photo">👩‍💼</div><div class="mc-name">Deepa Krishnan</div><div class="mc-role">Secretary</div><div class="mc-block">Block: Primrose</div><div class="mc-focus">Resident Communication, Documentation, Compliance</div></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       COMMITTEES PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-committees">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">🤝 Community Subcommittees</div>
+    <div class="section-sub">Volunteer-led groups driving SJR Bluewaters forward</div>
+    <div class="committee-card"><h3>🌱 Green Committee</h3><p>Volunteers: Arun Nair, Priya Menon, Karthik S</p><div class="join-tag">Interested to join? → greencommittee@sjrbw.org</div></div>
+    <div class="committee-card"><h3>♻️ Waste Management</h3><p>Volunteers: Sneha Rao, Vivek Kumar</p><div class="join-tag">Interested to join? → waste@sjrbw.org</div></div>
+    <div class="committee-card"><h3>🎭 Cultural Committee</h3><p>Volunteers: Meera Iyer, Pooja Sharma</p><div class="join-tag">Interested to join? → cultural@sjrbw.org</div></div>
+    <div class="committee-card"><h3>⚖️ Legal Committee</h3><p>Volunteers: Rajiv Menon, Deepa Krishnan</p><div class="join-tag">Interested to join? → legal@sjrbw.org</div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       EMERGENCY PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-emergency">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">🚨 Emergency Contacts</div>
+    <div class="section-sub">Quick access when it matters most</div>
+    <div class="emergency-alert">
+      <p>🆘 In a life-threatening emergency call 112 immediately</p>
+      <button>📞 CALL 112 NOW</button>
+    </div>
+    <div class="panel-grid">
+      <div class="info-box">
+        <h3>🚔 National Emergency</h3>
+        <p>Police: 100<br>Ambulance: 108<br>Fire: 101<br>Women Helpline: 1091<br>Disaster Mgmt: 1078</p>
+      </div>
+      <div class="info-box">
+        <h3>🏥 Nearby Hospitals</h3>
+        <p>Narayana Health: +91 9876543210<br>Sparsh Hospital: +91 9988776655<br>Apollo Clinic: +91 9123456780<br>Columbia Asia: +91 80 7100 0000</p>
+      </div>
+      <div class="info-box">
+        <h3>🏢 Society Contacts</h3>
+        <p>Security Gate: +91 98440 00001<br>Society Manager: +91 98440 00002<br>Maintenance: +91 98440 00003<br>MC President: +91 98440 00004</p>
+      </div>
+      <div class="info-box">
+        <h3>⚡ Utility Helplines</h3>
+        <p>BESCOM (Electricity): 1912<br>BWSSB (Water): 1916<br>Gas Leak (IGL): 1906<br>Pest Control: +91 98440 00005</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       COMMUNITY HELPERS PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-helpers">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">🩺 Community Helper Directory</div>
+    <div class="section-sub">Trusted services and specialists recommended by residents</div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('ortho')">🦴 Ortho / Spine Specialists <span class="plus-icon" id="pi-ortho">+</span></div><div class="expand-content" id="ortho">Dr. Ramesh Ortho Clinic — +91 9988123412<br>Dr. Spine Care Center — +91 9845123412<br>Advanced Spine Institute — +91 9876501122</div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('ent')">👂 ENT Specialists <span class="plus-icon" id="pi-ent">+</span></div><div class="expand-content" id="ent">Dr. Mehta ENT Care — +91 9845012345<br>Sound & Hearing Clinic — +91 9988771122</div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('car')">🚗 Car Service Centers <span class="plus-icon" id="pi-car">+</span></div><div class="expand-content" id="car">Bluewheel Auto Garage — +91 9876500011<br>QuickFix Car Care — +91 9988112299</div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('bike')">🏍️ Bike Repair Centers <span class="plus-icon" id="pi-bike">+</span></div><div class="expand-content" id="bike">MotoFast Repairs — +91 9888776655<br>2Wheel Experts — +91 9123456777</div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('plumb')">🔧 Plumbers & Electricians <span class="plus-icon" id="pi-plumb">+</span></div><div class="expand-content" id="plumb">Ravi Plumbing Works — +91 9912345678<br>BrightFix Electricals — +91 9988001122</div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('tutor')">📚 Home Tutors <span class="plus-icon" id="pi-tutor">+</span></div><div class="expand-content" id="tutor">Maths & Science: Kavitha — +91 9845001234<br>English & Hindi: Ramesh — +91 9876500234</div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       AMENITIES PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-amenities">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">🏊 Society Amenities</div>
+    <div class="section-sub">Facilities available to all SJR Bluewaters residents</div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('apool')">🏊 Swimming Pool <span class="plus-icon" id="pi-apool">+</span></div><div class="expand-content" id="apool">Large family swimming pool with separate kids' section and deck seating. Open daily 6–9 AM and 4–8 PM. Closed Tuesdays for cleaning.<div class="amenity-img-placeholder"><span>📷</span>Upload Pool Photo</div></div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('aclub')">🏢 Clubhouse <span class="plus-icon" id="pi-aclub">+</span></div><div class="expand-content" id="aclub">Multi-purpose clubhouse for events, meetings and indoor activities. Capacity: 150. Book via Management Office 5 days in advance.<div class="amenity-img-placeholder"><span>📷</span>Upload Clubhouse Photo</div></div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('agym')">🏋️ Gymnasium <span class="plus-icon" id="pi-agym">+</span></div><div class="expand-content" id="agym">Fully equipped fitness center with cardio and strength training equipment. Open 5 AM – 10 PM daily.<div class="amenity-img-placeholder"><span>📷</span>Upload Gym Photo</div></div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('acourt')">🏸 Badminton Courts <span class="plus-icon" id="pi-acourt">+</span></div><div class="expand-content" id="acourt">Two indoor badminton courts. Booking available via Management Office. Rackets and shuttlecocks available on loan.<div class="amenity-img-placeholder"><span>📷</span>Upload Court Photo</div></div></div>
+    <div class="expand-box"><div class="expand-header" onclick="toggleExpand('agarden')">🌳 Garden & Walking Track <span class="plus-icon" id="pi-agarden">+</span></div><div class="expand-content" id="agarden">Landscaped garden with a 400m walking/jogging track. Open to residents and their guests all day.<div class="amenity-img-placeholder"><span>📷</span>Upload Garden Photo</div></div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       EVENTS PAGE
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-events">
+  <div style="padding:10px 20px 0;"><button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:600;color:#1e3a5f;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);">← Home</button></div>
+    <div class="section-title">🎉 Events & Activities</div>
+    <div class="section-sub">What's happening at SJR Bluewaters</div>
+    <div class="panel-grid">
+      <div class="info-box"><h3>🎉 Children's Day Festival</h3><p>Date: May 18<br>Venue: Clubhouse Lawn<br>Time: 4:00 PM<br>Coordinator: Meera Iyer<br>Open to all children and families</p></div>
+      <div class="info-box"><h3>🧘 Weekend Yoga</h3><p>Every Saturday<br>Garden Area<br>Time: 6:30 AM<br>Coordinator: Vivek Kumar<br>All skill levels welcome</p></div>
+      <div class="info-box"><h3>🏛️ Annual General Meeting</h3><p>Date: May 18<br>Venue: Clubhouse<br>Time: 6:00 PM<br>All residents invited<br>MC elections & budget review</p></div>
+      <div class="info-box"><h3>📚 Book Club</h3><p>Date: May 25<br>Venue: Library Room<br>Time: 5:00 PM<br>6 spots available<br>Contact: Priya — +91 98440 00006</p></div>
+    </div>
+  </div>
+
+</div><!-- end portal -->
+
+<!-- ════════════════════════════════════
+     SOP VIEWER MODAL
+════════════════════════════════════ -->
+<div id="sopModal">
+  <div class="sop-modal-box">
+    <div class="sop-modal-header">
+      <div class="sop-modal-title" id="sopModalTitle">SOP Title</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm" id="sopDownloadBtn" style="display:none">⬇ Download</button>
+        <button class="btn btn-sm btn-red" onclick="closeSOP()">✕ Close</button>
+      </div>
+    </div>
+    <div class="sop-modal-meta" id="sopModalMeta"></div>
+    <div class="sop-modal-body" id="sopModalBody"></div>
+
+    <!-- Feedback -->
+    <div id="sopFeedbackSection" style="border-top:1px solid #e5e7eb;background:#f9fafb;">
+      <!-- Collapsed toggle bar -->
+      <div onclick="toggleFeedbackForm()" style="padding:12px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+        <span style="font-size:13px;font-weight:600;color:#1e3a5f;">💬 Share feedback on this SOP</span>
+        <span id="fbToggleIcon" style="font-size:11px;color:#6b7280;background:#e5e7eb;padding:3px 10px;border-radius:99px;">▼ Expand</span>
+      </div>
+      <div id="sopFeedbackForm" style="display:none;padding:0 20px 16px;">
+        <textarea id="fbComment" placeholder="Your comment or suggestion…"
+          style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;font-size:12px;resize:vertical;min-height:72px;font-family:inherit;margin-bottom:8px;"></textarea>
+        <div id="fbIdentityFields">
+          <select id="fbBlock" style="width:100%;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;margin-bottom:8px;background:#fff;">
+            <option value="">Select Block *</option>
+            <option value="Alston">Alston</option>
+            <option value="Boston">Boston</option>
+            <option value="Clarence">Clarence</option>
+            <option value="Crescent">Crescent</option>
+            <option value="Greenwich">Greenwich</option>
+            <option value="Goldcoast">Goldcoast</option>
+            <option value="Hamstead A">Hamstead A</option>
+            <option value="Hamstead B">Hamstead B</option>
+            <option value="Hamstead AB">Hamstead AB</option>
+            <option value="Kensington">Kensington</option>
+            <option value="Mayfair">Mayfair</option>
+            <option value="Primrose">Primrose</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input id="fbName" placeholder="Your Name *" style="flex:1;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;" />
+            <input id="fbFlat" placeholder="Flat No. *" style="flex:1;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;" />
+          </div>
+        </div>
+        <button onclick="submitFeedback()" style="width:100%;padding:10px;background:#1e3a5f;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Submit Feedback</button>
+        <div id="fbMsg" style="margin-top:8px;font-size:12px;display:none;"></div>
+      </div>
+      <div id="sopFeedbackDone" style="display:none;text-align:center;padding:14px 20px;">
+        <div style="font-size:20px;margin-bottom:4px;">✅</div>
+        <div style="font-size:13px;color:#15803d;font-weight:600;">Thanks for your feedback!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     ADMIN MODAL
+════════════════════════════════════ -->
+<div id="adminModal">
+  <div class="admin-box">
+    <div class="admin-header">
+      <h2>⚙️ Admin Panel — SJR Bluewaters</h2>
+      <button class="btn btn-sm" onclick="closeAdmin()" style="background:#374151;">✕ Close</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="atab active" onclick="showATab('aDash',this)">Dashboard</button>
+      <button class="atab" onclick="showATab('aSOPs',this)">SOPs</button>
+      <button class="atab" onclick="showATab('aAnn',this)">Announcements</button>
+      <button class="atab" onclick="showATab('aEvents',this)">Events</button>
+      <button class="atab" onclick="showATab('aDB',this)">Database</button>
+      <button class="atab" onclick="showATab('aFeedback',this);loadFeedback()">Feedback</button>
+    </div>
+    <div class="admin-body">
+
+      
+      <!-- LOGIN -->
+      <div class="asection active" id="aLogin">
+        <div style="background:#fff;border-radius:14px;padding:22px;border:1px solid #e5e7eb;">
+          <strong style="font-size:16px;color:#1e3a5f;display:block;margin-bottom:16px;">🔐 Admin Login</strong>
+
+          <input class="form-input" id="adminEmail" placeholder="Admin Email" />
+          <input class="form-input" id="adminPassword" type="password" placeholder="Password" />
+
+          <button class="form-submit" onclick="loginAdmin()">Login</button>
+
+          <div id="loginMsg" style="margin-top:10px;font-size:12px;display:none;"></div>
+        </div>
+      </div>
+
+<!-- DASHBOARD -->
+      <div class="asection" id="aDash">
+        <!-- Supabase status line -->
+        <div style="font-size:11px;color:#6b7280;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+          <span>🔗 Database:</span>
+          <span id="dash-db-status" style="font-weight:700;color:#059669;">Checking…</span>
+        </div>
+        <!-- Stat cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+          <div style="background:linear-gradient(135deg,#0369a1,#38bdf8);color:#fff;border-radius:16px;padding:20px;cursor:pointer;" onclick="showATab('aSOPs',null)">
+            <div style="font-size:28px;margin-bottom:2px;">📋</div>
+            <div style="font-size:32px;font-weight:900;line-height:1;" id="dash-sop-count">—</div>
+            <div style="font-size:11px;opacity:.85;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">SOPs Published</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#7e22ce,#a855f7);color:#fff;border-radius:16px;padding:20px;cursor:pointer;" onclick="showATab('aFeedback',document.querySelector('[onclick*=aFeedback]'));loadFeedback()">
+            <div style="font-size:28px;margin-bottom:2px;">💬</div>
+            <div style="font-size:32px;font-weight:900;line-height:1;" id="dash-feedback-count">—</div>
+            <div style="font-size:11px;opacity:.85;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Feedback Received</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#059669,#34d399);color:#fff;border-radius:16px;padding:20px;cursor:pointer;" onclick="showATab('aAnn',null)">
+            <div style="font-size:28px;margin-bottom:2px;">📢</div>
+            <div style="font-size:32px;font-weight:900;line-height:1;" id="dash-ann-count">—</div>
+            <div style="font-size:11px;opacity:.85;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Announcements</div>
+          </div>
+        </div>
+        <!-- Quick actions -->
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;border:1px solid #e5e7eb;">
+          <strong style="font-size:12px;color:#374151;display:block;margin-bottom:10px;">⚡ Quick Actions</strong>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <button class="btn" style="background:#fff;color:#0369a1;border:1px solid #bae6fd;text-align:left;" onclick="showATab('aSOPs',null)">📋 Upload / Add SOP</button>
+            <button class="btn" style="background:#fff;color:#0369a1;border:1px solid #bae6fd;text-align:left;" onclick="showATab('aAnn',null)">📢 Post Announcement</button>
+            <button class="btn" style="background:#fff;color:#0369a1;border:1px solid #bae6fd;text-align:left;" onclick="showATab('aEvents',null)">🎉 Add Event</button>
+            <button class="btn" style="background:#fff;color:#0369a1;border:1px solid #bae6fd;text-align:left;" onclick="showATab('aDB',null)">🔗 Configure Database</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOPs ADMIN -->
+      <div class="asection" id="aSOPs">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <strong style="font-size:14px;color:#1e3a5f;">📋 Manage SOPs</strong>
+          <button class="btn btn-sm" onclick="document.getElementById('newSopForm').style.display='block'">+ Add SOP</button>
+        </div>
+
+        <div id="newSopForm" style="background:#fff;border-radius:14px;padding:18px;border:1px solid #e5e7eb;margin-bottom:14px;">
+          <span class="form-label">Add New SOP</span>
+          <input class="form-input" id="sopTitle" placeholder="SOP Title  (e.g. Visitor Entry Rules)" />
+          <div class="form-row">
+            <input class="form-input" id="sopIcon" placeholder="Icon emoji  e.g. 🛡️" style="margin-bottom:0;" />
+            <select class="form-select" id="sopCategory" style="margin-bottom:0;">
+              <option>Security</option><option>Parking</option><option>Amenities</option>
+              <option>General</option><option>Admin</option><option>Housekeeping</option>
+            </select>
+          </div>
+          <div style="height:10px;"></div>
+
+          <!-- Text vs File tabs -->
+          <div class="content-tabs">
+            <button class="ctab active" id="ctab-text" onclick="switchCtab('text')">✏️ Write Text</button>
+            <button class="ctab" id="ctab-file" onclick="switchCtab('file')">📎 Upload PDF / Doc</button>
+          </div>
+
+          <div id="ctab-text-panel">
+            <textarea class="form-textarea" id="sopContent" style="min-height:100px" placeholder="Write the SOP content here…"></textarea>
+          </div>
+
+          <div id="ctab-file-panel" style="display:none;">
+            <div class="upload-zone" onclick="document.getElementById('sopFile').click()">
+              <input type="file" id="sopFile" accept=".pdf,.doc,.docx,.txt" onchange="handleFile(event)">
+              <div class="uz-icon">📎</div>
+              <p>Tap to upload PDF or Word document</p>
+              <span>Supported: PDF, DOC, DOCX, TXT · Max 20MB</span>
+            </div>
+            <div class="file-preview" id="filePreview">
+              <span id="fileIcon" style="font-size:22px;">📄</span>
+              <span class="file-preview-name" id="fileName">—</span>
+              <button onclick="clearFile()" style="font-size:11px;color:#ef4444;font-weight:700;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;">✕</button>
+            </div>
+          </div>
+
+          <button class="form-submit" onclick="publishSOP()">🚀 Publish SOP</button>
+          <div id="sopPublishMsg" style="margin-top:8px;font-size:12px;display:none;"></div>
+        </div>
+
+        <span class="form-label">Published SOPs</span>
+        <div id="admin-sop-list"><div style="font-size:12px;color:#94a3b8;padding:8px;">Loading…</div></div>
+      </div>
+
+      <!-- ANNOUNCEMENTS ADMIN -->
+      <div class="asection" id="aAnn">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <strong style="font-size:14px;color:#1e3a5f;">📢 Post Announcement</strong>
+        </div>
+        <div style="background:#fff;border-radius:14px;padding:18px;border:1px solid #e5e7eb;margin-bottom:14px;">
+          <span class="form-label">Compose</span>
+          <input class="form-input" id="annTitle" placeholder="Title" />
+          <textarea class="form-textarea" id="annBody" placeholder="Message for all residents…"></textarea>
+          <div style="display:flex;gap:8px;">
+            <select class="form-select" id="annTarget" style="flex:1;margin-bottom:0;"><option>All Residents</option><option>Block A</option><option>Block B</option><option>Block C</option></select>
+            <button class="btn" onclick="postAnnouncement()" style="flex-shrink:0;">Publish</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTS ADMIN -->
+      <div class="asection" id="aEvents">
+        <strong style="font-size:14px;color:#1e3a5f;display:block;margin-bottom:14px;">🎉 Create Event</strong>
+        <div style="background:#fff;border-radius:14px;padding:18px;border:1px solid #e5e7eb;">
+          <span class="form-label">Event Details</span>
+          <input class="form-input" placeholder="Event Name" />
+          <div class="form-row"><input class="form-input" type="date" style="margin-bottom:0;" /><input class="form-input" type="time" style="margin-bottom:0;" /></div>
+          <div style="height:10px;"></div>
+          <input class="form-input" placeholder="Venue (e.g. Clubhouse)" />
+          <input class="form-input" placeholder="Coordinator Name" />
+          <input class="form-input" type="number" placeholder="Max Participants (optional)" />
+          <button class="form-submit">Publish Event</button>
+        </div>
+      </div>
+
+      <!-- DATABASE CONFIG -->
+      <div class="asection" id="aDB">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <strong style="font-size:14px;color:#1e3a5f;">🔗 Supabase Configuration</strong>
+          <span id="dbConnectionStatus" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:#fef9c3;color:#92400e;border:1px solid #fde68a;">⚡ Not connected</span>
+        </div>
+        <p style="font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.7;">Connect a free Supabase database so SOPs uploaded by the Admin appear instantly on the portal for all residents — no HTML edits, no file changes needed.</p>
+
+        <div style="background:#fff;border-radius:14px;padding:18px;border:1px solid #e5e7eb;margin-bottom:14px;">
+          <span class="form-label">Step 1 — Create free project at supabase.com</span>
+          <span class="form-label" style="margin-top:4px;">Step 2 — Run this SQL in your Supabase SQL editor:</span>
+          <div style="background:#1e293b;color:#a5f3fc;border-radius:10px;padding:14px;font-family:monospace;font-size:11px;line-height:1.8;margin-bottom:14px;overflow-x:auto;white-space:pre;">CREATE TABLE sops (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  title text NOT NULL,
+  category text,
+  icon text DEFAULT '📋',
+  content text,
+  file_url text,
+  file_name text,
+  content_type text DEFAULT 'text',
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE sops ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read" ON sops FOR SELECT USING (true);
+CREATE POLICY "Auth insert" ON sops FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+DROP TABLE IF EXISTS sop_feedback;
+CREATE TABLE sop_feedback (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  sop_id uuid REFERENCES sops(id) ON DELETE CASCADE,
+  sop_title text,
+  comment text,
+  flat_no text,
+  block text,
+  member_name text,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE sop_feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public insert feedback" ON sop_feedback FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public read feedback" ON sop_feedback FOR SELECT USING (true);</div>
+          <span class="form-label">Step 3 — Enter your credentials:</span>
+          <input class="form-input" id="dbUrl" placeholder="Project URL  (https://xxxx.supabase.co)" />
+          <input class="form-input" id="dbKey" placeholder="anon / public API key" />
+          <button class="form-submit" onclick="saveSupabaseConfig()">💾 Save & Connect</button>
+          <div id="dbSaveMsg" style="margin-top:8px;font-size:12px;display:none;"></div>
+        </div>
+
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px;">
+          <strong style="font-size:12px;color:#15803d;display:block;margin-bottom:4px;">✅ What this unlocks</strong>
+          <ul style="font-size:12px;color:#166534;line-height:1.9;padding-left:16px;">
+            <li>Admin uploads SOP (PDF/text) → instantly live for all residents</li>
+            <li>Zero HTML edits, zero file management</li>
+            <li>SOPs survive page refreshes and work for everyone</li>
+            <li>Free up to 500MB storage on Supabase</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FEEDBACK -->
+      <div class="asection" id="aFeedback">
+        <strong style="font-size:14px;color:#1e3a5f;display:block;margin-bottom:6px;">💬 SOP Feedback</strong>
+        <p style="font-size:12px;color:#64748b;margin-bottom:14px;">Feedback submitted by community members on SOPs.</p>
+        <div id="feedbackList"><div class="sop-loading">Click the Feedback tab to load…</div></div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- end admin modal -->
+
+<script>
+// ════════════════════════════════════════════
+// CONFIG & STATE
+// ════════════════════════════════════════════
+// Hardcoded credentials — always use these, ignore any stale localStorage values
+const HARDCODED_URL = 'https://vfwhdlmebcnikvwyruzt.supabase.co';
+const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmd2hkbG1lYmNuaWt2d3lydXp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjU3NzgsImV4cCI6MjA5MzkwMTc3OH0.BX_JBSkXMjALgBd7mATILkvtjBnvxEyy8GnssqvF6zo';
+localStorage.setItem('sbUrl', HARDCODED_URL);
+localStorage.setItem('sbKey', HARDCODED_KEY);
+let SUPABASE_URL = HARDCODED_URL;
+let SUPABASE_KEY = HARDCODED_KEY;
+let activeCat = 'All';
+let allSOPs = [];   // [{id,title,category,icon,content,file_url,file_name,content_type,created_at}]
+let currentFile = null;
+let currentUser = null;
+let isAdminLoggedIn = false;
+
+// ── Built-in seed SOPs (shown when no Supabase) ──────────────────────
+const SEED_SOPS = [];
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const t = document.getElementById('tab-' + id);
+  if(t) t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id === 'sops') loadSOPs();
+}
+
+// ════════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════════
+function saveSupabaseConfig() {
+  // Pick whichever field actually has a value filled in
+  const cfgUrl = document.getElementById('cfgUrl');
+  const dbUrl  = document.getElementById('dbUrl');
+  const cfgKey = document.getElementById('cfgKey');
+  const dbKey  = document.getElementById('dbKey');
+
+  const url = (cfgUrl && cfgUrl.value.trim()) || (dbUrl && dbUrl.value.trim()) || '';
+  const key = (cfgKey && cfgKey.value.trim()) || (dbKey && dbKey.value.trim()) || '';
+
+  if (!url || !key) {
+    alert('Please enter both URL and key.');
+    return;
+  }
+
+  SUPABASE_URL = url;
+  SUPABASE_KEY = key;
+
+  localStorage.setItem('sbUrl', url);
+  localStorage.setItem('sbKey', key);
+
+  const msg = document.getElementById('dbSaveMsg');
+
+  if (msg) {
+    msg.style.display = 'block';
+    msg.style.color = '#15803d';
+    msg.textContent = '✅ Connected successfully to Supabase! Loading SOPs…';
+  }
+  updateDBConnectionStatus();
+
+  const banner = document.getElementById('configBanner');
+
+  if (banner) {
+    banner.style.display = 'none';
+  }
+
+  updateDBStatus();
+  updateDBConnectionStatus();
+  checkExistingSession();
+  loadSOPs();
+}
+
+function updateDBConnectionStatus() {
+  // Refresh in-memory vars from localStorage
+  if(!SUPABASE_URL) SUPABASE_URL = localStorage.getItem('sbUrl') || '';
+  if(!SUPABASE_KEY) SUPABASE_KEY = localStorage.getItem('sbKey') || '';
+
+  const badge = document.getElementById('dbConnectionStatus');
+  const loginMsg = document.getElementById('loginMsg');
+  if(badge) {
+    if(SUPABASE_URL && SUPABASE_KEY) {
+      badge.style.background = '#f0fdf4'; badge.style.color = '#15803d'; badge.style.borderColor = '#bbf7d0';
+      badge.textContent = '🟢 Connected';
+    } else {
+      badge.style.background = '#fef9c3'; badge.style.color = '#92400e'; badge.style.borderColor = '#fde68a';
+      badge.textContent = '⚡ Not connected';
+    }
+  }
+  // Clear the "connect first" login error if now connected
+  if(loginMsg && SUPABASE_URL && SUPABASE_KEY) loginMsg.style.display = 'none';
+}
+
+function updateDBStatus() {
+  // Only show Supabase status inside the admin panel dashboard — never in the topbar for residents
+  const el = document.getElementById('dbStatus');
+  if(el) el.style.display = 'none'; // always hidden in topbar
+
+  const da = document.getElementById('dash-db-status');
+  if(da) da.textContent = (SUPABASE_URL && SUPABASE_KEY) ? '🟢 Connected' : '⚡ Not connected';
+}
+
+async function sbFetch(path, opts={}) {
+  // Use admin session token for writes, anon key for reads
+  let token = SUPABASE_KEY;
+  const method = (opts.method || 'GET').toUpperCase();
+  if(method !== 'GET') {
+    try {
+      const raw = localStorage.getItem('sb_admin_session');
+      if(raw) token = JSON.parse(raw).access_token || SUPABASE_KEY;
+    } catch(e) {}
+  }
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers },
+    ...opts
+  });
+  if(!res.ok) {
+    const errBody = await res.text();
+    console.error('sbFetch error', res.status, path, errBody);
+    throw new Error(`HTTP ${res.status}: ${errBody}`);
+  }
+  return res.json();
+}
+
+// ════════════════════════════════════════════
+// LOAD SOPs
+// ════════════════════════════════════════════
+async function loadSOPs() {
+  const container = document.getElementById('sopListContainer');
+  const homeList = document.getElementById('home-sop-list');
+  container.innerHTML = '<div class="sop-loading">⏳ Loading SOPs…</div>';
+
+  try {
+    if(SUPABASE_URL && SUPABASE_KEY) {
+      const data = await sbFetch('sops?select=*&order=created_at.desc');
+      allSOPs = [...SEED_SOPS, ...data];
+    } else {
+      allSOPs = SEED_SOPS;
+    }
+    // Update counts
+    document.getElementById('home-sop-count').textContent = allSOPs.length;
+    document.getElementById('dash-sop-count').textContent = allSOPs.length;
+    renderSOPs();
+    renderAdminSOPList();
+    renderHomeSOPs(homeList);
+    renderAnnouncements();
+  } catch(e) {
+    console.error('loadSOPs error:', e);
+    allSOPs = SEED_SOPS;
+    renderSOPs();
+    renderHomeSOPs(homeList);
+    renderAnnouncements();
+    container.innerHTML = `<div style="font-size:12px;color:#dc2626;padding:10px;background:#fef2f2;border-radius:8px;margin-top:8px;">
+      ⚠️ Supabase error: ${e.message}<br>
+      <small style="color:#6b7280;">Check browser Console (F12) for details.</small>
+    </div>`;
+  }
+}
+
+function renderHomeSOPs(el) {
+  if(!el) return;
+  const items = allSOPs.slice(0,3);
+  el.innerHTML = items.map(s => `
+    <div class="card-row" style="cursor:pointer;" onclick="openSOP('${s.id}')">
+      <div><h4>${s.icon||'📋'} ${s.title}</h4><p>${s.category} ${s.file_name?'· 📎 PDF':''}</p></div>
+      <button class="btn btn-sm" onclick="event.stopPropagation();openSOP('${s.id}')">View</button>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// ANNOUNCEMENTS
+// ════════════════════════════════════════════
+// Fixed events — set expiry to the day of the event (auto-hides after that date)
+const FIXED_ANNOUNCEMENTS = [
+  { text: 'Annual General Meeting scheduled — May 18 at Clubhouse, 6PM', tag: 'Meeting', tagClass: 'pill-teal', expires: '2025-05-18' },
+];
+
+function renderAnnouncements() {
+  const el = document.getElementById('ann-list');
+  const badge = document.getElementById('ann-badge');
+  if (!el) return;
+
+  const now = new Date();
+  const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+  // 1. Fixed announcements that haven't expired yet
+  const fixedItems = FIXED_ANNOUNCEMENTS.filter(a => new Date(a.expires) >= now).map(a => ({
+    text: a.text,
+    tag: a.tag,
+    tagClass: a.tagClass,
+    date: null,
+    isNew: true
+  }));
+
+  // 2. SOPs added in the last 7 days
+  const sopItems = allSOPs
+    .filter(s => s.created_at && new Date(s.created_at) >= sevenDaysAgo)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .map(s => ({
+      text: `New SOP published — ${s.title}`,
+      tag: 'SOP',
+      tagClass: 'pill-green',
+      date: new Date(s.created_at),
+      isNew: true,
+      sopId: s.id
+    }));
+
+  const all = [...fixedItems, ...sopItems];
+
+  if (!all.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#9ca3af;padding:12px 0;">No announcements at the moment.</div>';
+    badge.style.display = 'none';
+    return;
+  }
+
+  // Badge count
+  const newCount = all.filter(a => a.isNew).length;
+  if (newCount > 0) {
+    badge.textContent = newCount + ' New';
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  el.innerHTML = all.map((a, i) => {
+    const dotColor = i === 0 ? '#0369a1' : '#6b7280';
+    const dateStr = a.date ? relativeDate(a.date) : '';
+    const metaParts = [dateStr, `<span class="pill ${a.tagClass}">${a.tag}</span>`].filter(Boolean);
+    const clickAttr = a.sopId ? `style="cursor:pointer;" onclick="openSOP('${a.sopId}')"` : '';
+    return `
+      <div class="ann-row" ${clickAttr}>
+        <div class="ann-dot" style="background:${dotColor}"></div>
+        <div>
+          <div class="ann-text">${a.text}</div>
+          <div class="ann-meta">${metaParts.join(' &nbsp;·&nbsp; ')}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function relativeDate(d) {
+  const diff = Math.floor((Date.now() - new Date(d)) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  return diff + ' days ago';
+}
+
+// ════════════════════════════════════════════
+// RENDER SOP LIST
+// ════════════════════════════════════════════
+function renderSOPs() {
+  const q = (document.getElementById('sopSearch').value || '').toLowerCase();
+  const filtered = allSOPs.filter(s =>
+    (activeCat === 'All' || s.category === activeCat) &&
+    (s.title.toLowerCase().includes(q) || (s.category||'').toLowerCase().includes(q))
+  );
+  const container = document.getElementById('sopListContainer');
+  if(!filtered.length) {
+    container.innerHTML = `<div class="sop-empty"><div class="ei">📋</div><p>No SOPs found</p><p style="font-size:12px;">Try a different search or ask Admin to publish SOPs.</p></div>`;
+    return;
+  }
+  const catColors = {Security:'pill-blue',Parking:'pill-blue',Amenities:'pill-teal',General:'pill-orange',Housekeeping:'pill-green',Admin:'pill-teal'};
+  container.innerHTML = filtered.map(s => `
+    <div class="sop-card" onclick="openSOP('${s.id}')">
+      <div class="sop-ico">${s.icon||'📋'}</div>
+      <div class="sop-info">
+        <div class="sop-title">${s.title}${s.content_type==='pdf'||s.file_url?` <span style="font-size:10px;background:#ccfbf1;color:#0f766e;padding:2px 7px;border-radius:99px;font-weight:700;margin-left:6px;">📎 PDF</span>`:''}
+        </div>
+        <div class="sop-meta-row">
+          <span class="pill ${catColors[s.category]||'pill-blue'}">${s.category||'General'}</span>
+          <span class="sop-updated">Added ${formatDate(s.created_at)}</span>
+        </div>
+      </div>
+      <div class="sop-chevron">›</div>
+    </div>`).join('');
+}
+
+function setCat(btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = btn.dataset.cat;
+  renderSOPs();
+}
+
+function formatDate(d) {
+  if(!d) return '';
+  try { return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'}); } catch{ return d; }
+}
+
+// ════════════════════════════════════════════
+// SOP VIEWER MODAL
+// ════════════════════════════════════════════
+function openSOP(id) {
+  const sop = allSOPs.find(s => s.id == id);
+  if(!sop) return;
+  document.getElementById('sopModalTitle').textContent = (sop.icon||'📋') + '  ' + sop.title;
+  const catColors = {Security:'pill-blue',Parking:'pill-blue',Amenities:'pill-teal',General:'pill-orange',Housekeeping:'pill-green',Admin:'pill-teal'};
+  document.getElementById('sopModalMeta').innerHTML = `<span class="pill ${catColors[sop.category]||'pill-blue'}">${sop.category||'General'}</span><span style="font-size:11px;color:#9ca3af;margin-left:10px;">Added ${formatDate(sop.created_at)}</span>`;
+  const body = document.getElementById('sopModalBody');
+  const dlBtn = document.getElementById('sopDownloadBtn');
+  if(sop.content_type === 'pdf' && sop.file_url) {
+    body.innerHTML = `<iframe class="sop-pdf-frame" src="${sop.file_url}" title="${sop.title}"></iframe>`;
+    body.style.padding = '0'; dlBtn.style.display='block';
+    dlBtn.onclick = () => {
+      if(sop.file_url.startsWith('data:')) {
+        const a = document.createElement('a');
+        a.href = sop.file_url;
+        a.download = sop.file_name || (sop.title + '.pdf');
+        a.click();
+      } else {
+        window.open(sop.file_url, '_blank');
+      }
+    };
+  } else if(sop.content_type === 'text' && sop.content) {
+    body.innerHTML = sop.content; body.style.padding='28px 30px'; dlBtn.style.display='none';
+  } else if(sop.content) {
+    body.innerHTML = '<pre style="white-space:pre-wrap;font-size:13px;line-height:1.8;color:#374151;">'+sop.content+'</pre>';
+    body.style.padding='28px 30px'; dlBtn.style.display='none';
+  } else {
+    body.innerHTML = `<div class="sop-empty"><div class="ei">📄</div><p>${sop.file_name||'No preview available'}</p></div>`;
+    body.style.padding='28px 30px'; dlBtn.style.display='none';
+  }
+  document.getElementById('sopModal').classList.add('open');
+  initFeedback(sop.id, sop.title);
+}
+
+function closeSOP() {
+  document.getElementById('sopModal').classList.remove('open');
+  document.getElementById('sopModalBody').innerHTML = '';
+}
+document.getElementById('sopModal').addEventListener('click', e => {
+  if(e.target === document.getElementById('sopModal')) closeSOP();
+});
+
+// ════════════════════════════════════════════
+// ADMIN MODAL
+// ════════════════════════════════════════════
+function openAdmin(){
+  document.getElementById('adminModal').classList.add('open');
+  // Always refresh connection status when panel opens
+  if(!SUPABASE_URL) SUPABASE_URL = localStorage.getItem('sbUrl') || '';
+  if(!SUPABASE_KEY) SUPABASE_KEY = localStorage.getItem('sbKey') || '';
+  updateDBConnectionStatus();
+  if(isAdminLoggedIn){
+    document.querySelectorAll('.asection').forEach(s => s.classList.remove('active'));
+    document.getElementById('aDash').classList.add('active');
+    document.querySelectorAll('.atab').forEach(t=>t.style.display='inline-block');
+    // Load feedback count for dashboard card
+    loadFeedbackCount();
+  } else {
+    document.querySelectorAll('.asection').forEach(s => s.classList.remove('active'));
+    document.getElementById('aLogin').classList.add('active');
+    document.querySelectorAll('.atab').forEach(t=>t.style.display='none');
+  }
+}
+function closeAdmin() { document.getElementById('adminModal').classList.remove('open'); }
+document.getElementById('adminModal').addEventListener('click', e => {
+  if(e.target === document.getElementById('adminModal')) closeAdmin();
+});
+function showATab(id, btn) {
+  document.querySelectorAll('.asection').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.atab').forEach(t => { if(t.textContent.trim().startsWith(id.replace('a',''))) t.classList.add('active'); });
+}
+
+// ── Content tab switcher ──────────────────────────────────────────
+function switchCtab(tab) {
+  ['text','file'].forEach(t => {
+    document.getElementById('ctab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('ctab-'+t+'-panel').style.display = t===tab ? 'block' : 'none';
+  });
+  currentFile = null;
+}
+
+// ── File upload ───────────────────────────────────────────────────
+function handleFile(e) {
+  currentFile = e.target.files[0];
+  if(!currentFile) return;
+  document.getElementById('filePreview').style.display = 'flex';
+  document.getElementById('fileIcon').textContent = currentFile.type==='application/pdf' ? '📄' : '📝';
+  document.getElementById('fileName').textContent = currentFile.name;
+}
+function clearFile() {
+  currentFile = null;
+  document.getElementById('filePreview').style.display = 'none';
+  document.getElementById('sopFile').value = '';
+}
+
+// ── Publish SOP ───────────────────────────────────────────────────
+async function publishSOP() {
+  const title = document.getElementById('sopTitle').value.trim();
+  const icon  = document.getElementById('sopIcon').value.trim() || '📋';
+  const cat   = document.getElementById('sopCategory').value;
+  const isFile= document.getElementById('ctab-file').classList.contains('active');
+  const msg   = document.getElementById('sopPublishMsg');
+  msg.style.display = 'block';
+
+  if(!title){ msg.style.color='#dc2626'; msg.textContent='⚠️ Please enter a title.'; return; }
+
+  const today = new Date().toISOString();
+  const newId = 'local_' + Date.now();
+
+  if(isFile && currentFile) {
+    msg.style.color='#0369a1'; msg.textContent='⏳ Processing file…';
+
+    if(SUPABASE_URL && SUPABASE_KEY) {
+      try {
+        const isPdf = currentFile.type === 'application/pdf';
+
+        // ── Step 1: Upload file to Supabase Storage ──────────────────
+        msg.style.color='#0369a1'; msg.textContent='⏳ Uploading file to Storage…';
+
+        // Get admin token for storage upload (storage requires auth)
+        let storageToken = SUPABASE_KEY;
+        try {
+          const raw = localStorage.getItem('sb_admin_session');
+          if(raw) storageToken = JSON.parse(raw).access_token || SUPABASE_KEY;
+        } catch(e) {}
+
+        // Build a unique file path: title-slug/filename
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+        const filePath = slug + '/' + currentFile.name;
+
+        const storageRes = await fetch(
+          `${SUPABASE_URL}/storage/v1/object/sops-bucket/${filePath}`,
+          {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + storageToken,
+              'Content-Type': currentFile.type || 'application/octet-stream',
+              'x-upsert': 'true'   // overwrite if same name uploaded again
+            },
+            body: currentFile
+          }
+        );
+
+        if(!storageRes.ok) {
+          const errText = await storageRes.text();
+          console.error('Storage upload error:', storageRes.status, errText);
+          throw new Error(`Storage upload failed (${storageRes.status}): ${errText}`);
+        }
+
+        // ── Step 2: Build the public URL ─────────────────────────────
+        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/sops-bucket/${filePath}`;
+
+        // ── Step 3: Save record to sops table ────────────────────────
+        msg.style.color='#0369a1'; msg.textContent='⏳ Saving record to database…';
+
+        const rec = await sbFetch('sops', { method:'POST', body: JSON.stringify({
+          title, icon, category: cat,
+          content_type: isPdf ? 'pdf' : 'other',
+          file_url: publicUrl,
+          file_name: currentFile.name,
+          created_at: today
+        })});
+
+        const newSop = Array.isArray(rec) ? rec[0] : rec;
+        allSOPs.unshift(newSop);
+        msg.style.color='#15803d'; msg.textContent='✅ SOP uploaded and live for all residents!';
+
+      } catch(e) {
+        msg.style.color='#dc2626'; msg.textContent='❌ Upload error: ' + e.message;
+        console.error('SOP upload error:', e);
+        return;
+      }
+    } else {
+      await addLocalFileSOP(title, icon, cat, today, newId, msg);
+    }
+  } else {
+    const content = document.getElementById('sopContent').value.trim();
+    if(!content){ msg.style.color='#dc2626'; msg.textContent='⚠️ Please write the SOP content.'; return; }
+    const formattedContent = content.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+    const newSop = {id:newId,title,icon,category:cat,content_type:'text',content:formattedContent,created_at:today};
+
+    if(SUPABASE_URL && SUPABASE_KEY) {
+      try {
+        const rec = await sbFetch('sops', {method:'POST', body:JSON.stringify({title,icon,category:cat,content_type:'text',content:formattedContent,created_at:today})});
+        allSOPs.unshift(Array.isArray(rec)?rec[0]:rec);
+        msg.style.color='#15803d'; msg.textContent='✅ SOP published to Supabase!';
+      } catch(e) {
+        allSOPs.unshift(newSop);
+        msg.style.color='#f97316'; msg.textContent='⚠️ Saved locally (Supabase error). Residents on this device can see it.';
+      }
+    } else {
+      allSOPs.unshift(newSop);
+      msg.style.color='#0369a1'; msg.textContent='✅ SOP added (local mode). Connect Supabase to share with all residents.';
+    }
+  }
+
+  renderSOPs(); renderAdminSOPList();
+  document.getElementById('home-sop-count').textContent = allSOPs.length;
+  document.getElementById('dash-sop-count').textContent = allSOPs.length;
+  // Reset form
+  document.getElementById('sopTitle').value=''; document.getElementById('sopIcon').value='';
+  document.getElementById('sopContent').value=''; clearFile();
+}
+
+async function addLocalFileSOP(title, icon, cat, today, newId, msg) {
+  const isPdf = currentFile.type === 'application/pdf';
+  const reader = new FileReader();
+  return new Promise(resolve => {
+    reader.onload = ev => {
+      const newSop = {id:newId,title,icon,category:cat,content_type:isPdf?'pdf':'other',file_url:isPdf?ev.target.result:null,file_name:currentFile.name,created_at:today};
+      allSOPs.unshift(newSop);
+      msg.style.color='#0369a1'; msg.textContent=`✅ ${isPdf?'PDF will render in viewer':'File added'}. Connect Supabase to share with all residents.`;
+      resolve();
+    };
+    reader.readAsDataURL(currentFile);
+  });
+}
+
+function renderAdminSOPList() {
+  const el = document.getElementById('admin-sop-list');
+  if(!el) return;
+  el.innerHTML = allSOPs.map(s => `
+    <div class="alist-item">
+      <span class="alist-name">${s.icon||'📋'} ${s.title} <span class="pill pill-blue" style="margin-left:4px;">${s.category}</span></span>
+      <div class="alist-actions">
+        <button class="aact-edit" onclick="openSOP('${s.id}')">View</button>
+        <button class="aact-arc" onclick="archiveSOP('${s.id}',this)">Archive</button>
+      </div>
+    </div>`).join('');
+}
+
+async function archiveSOP(id, btn) {
+  if(!confirm('Remove this SOP from the portal?')) return;
+  // Delete from Supabase for any non-local ID (local IDs start with 'local_')
+  if(SUPABASE_URL && SUPABASE_KEY && !String(id).startsWith('local_')) {
+    try { await sbFetch(`sops?id=eq.${id}`, {method:'DELETE'}); } catch(e){ console.error('Archive delete error:', e); }
+  }
+  allSOPs = allSOPs.filter(s => s.id != id);
+  renderSOPs(); renderAdminSOPList();
+  document.getElementById('home-sop-count').textContent = allSOPs.length;
+  document.getElementById('dash-sop-count').textContent = allSOPs.length;
+}
+
+function postAnnouncement() {
+  const t=document.getElementById('annTitle').value.trim();
+  if(!t){ alert('Please enter a title.'); return; }
+  alert('✅ Announcement "'+t+'" published! (Connect Supabase for persistence across all devices.)');
+  document.getElementById('annTitle').value=''; document.getElementById('annBody').value='';
+}
+
+// ── Expand / collapse ─────────────────────────────────────────────
+function toggleExpand(id) {
+  const el = document.getElementById(id);
+  const pi = document.getElementById('pi-'+id);
+  el.classList.toggle('open');
+  if(pi) pi.classList.toggle('open');
+}
+
+
+async function loginAdmin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value.trim();
+  const msg = document.getElementById('loginMsg');
+
+  // Re-read from localStorage in case they were saved after page load
+  if(!SUPABASE_URL) SUPABASE_URL = localStorage.getItem('sbUrl') || '';
+  if(!SUPABASE_KEY) SUPABASE_KEY = localStorage.getItem('sbKey') || '';
+
+  if(!SUPABASE_URL || !SUPABASE_KEY){
+    msg.style.display='block';
+    msg.style.color='#dc2626';
+    msg.textContent='Please set your Supabase URL and key in the Database tab first.';
+    return;
+  }
+
+  try{
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({email,password})
+    });
+
+    const data = await res.json();
+
+    if(data.access_token){
+      currentUser = data.user;
+      isAdminLoggedIn = true;
+
+      localStorage.setItem('sb_admin_session', JSON.stringify(data));
+
+      document.getElementById('adminAccessBtn').style.display='none';
+      document.getElementById('logoutBtn').style.display='inline-block';
+
+      msg.style.display='block';
+      msg.style.color='#15803d';
+      msg.textContent='✅ Login successful';
+
+      document.getElementById('aLogin').classList.remove('active');
+      document.getElementById('aDash').classList.add('active');
+
+      document.querySelectorAll('.atab').forEach(t=>t.style.display='inline-block');
+    } else {
+      msg.style.display='block';
+      msg.style.color='#dc2626';
+      msg.textContent='Invalid credentials';
+    }
+
+  } catch(e){
+    msg.style.display='block';
+    msg.style.color='#dc2626';
+    msg.textContent='Login failed';
+  }
+}
+
+function logoutAdmin(){
+  localStorage.removeItem('sb_admin_session');
+  currentUser = null;
+  isAdminLoggedIn = false;
+
+  document.getElementById('logoutBtn').style.display='none';
+  document.getElementById('adminAccessBtn').style.display='inline-block';
+
+  closeAdmin();
+}
+
+async function checkExistingSession(){
+  const raw = localStorage.getItem('sb_admin_session');
+  if(!raw || !SUPABASE_URL || !SUPABASE_KEY) {
+    if(raw) localStorage.removeItem('sb_admin_session'); // stale
+    return;
+  }
+
+  try {
+    const session = JSON.parse(raw);
+    const token = session.access_token;
+    if(!token) throw new Error('no token');
+
+    // Verify token is still valid with Supabase
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${token}` }
+    });
+
+    if(res.ok) {
+      const user = await res.json();
+      currentUser = user;
+      isAdminLoggedIn = true;
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      document.getElementById('adminAccessBtn').style.display = 'none';
+    } else {
+      // Token expired or invalid — clear it
+      localStorage.removeItem('sb_admin_session');
+      isAdminLoggedIn = false;
+    }
+  } catch(e) {
+    localStorage.removeItem('sb_admin_session');
+    isAdminLoggedIn = false;
+  }
+}
+
+
+// ── Init ──────────────────────────────────────────────────────────
+(function init(){
+  // Always ensure modal is closed on page load — never auto-open
+  document.getElementById('adminModal').classList.remove('open');
+
+  // Always start logged out — clear any saved admin session on fresh page load
+  // This prevents residents from seeing the Logout button if admin used same browser
+  localStorage.removeItem('sb_admin_session');
+  isAdminLoggedIn = false;
+  currentUser = null;
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('adminAccessBtn').style.display = 'inline-block';
+
+  // Restore config
+  if(SUPABASE_URL && SUPABASE_KEY) {
+    document.getElementById('configBanner').style.display = 'none';
+    const du = document.getElementById('dbUrl'), dk = document.getElementById('dbKey');
+    const cu = document.getElementById('cfgUrl'), ck = document.getElementById('cfgKey');
+    if(du) du.value = SUPABASE_URL; if(dk) dk.value = SUPABASE_KEY;
+    if(cu) cu.value = SUPABASE_URL; if(ck) ck.value = SUPABASE_KEY;
+  } else {
+    // Only show banner to admins (after login) — not to regular visitors
+    // Banner stays hidden; admin can configure via Admin Panel > Database tab
+    document.getElementById('configBanner').style.display = 'none';
+  }
+  updateDBStatus();
+  updateDBConnectionStatus();
+  loadSOPs();
+})();
+// ════════════════════════════════════════════
+// SOP FEEDBACK
+// ════════════════════════════════════════════
+let currentFeedbackSopId = null;
+let currentFeedbackSopTitle = null;
+let currentFeedbackThumb = null;
+
+async function loadFeedbackCount() {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/sop_feedback?select=id', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const data = await res.json();
+    const el = document.getElementById('dash-feedback-count');
+    if(el && Array.isArray(data)) el.textContent = data.length;
+  } catch(e) {}
+}
+
+function toggleFeedbackForm() {
+  const form = document.getElementById('sopFeedbackForm');
+  const icon = document.getElementById('fbToggleIcon');
+  const done = document.getElementById('sopFeedbackDone');
+  if(done.style.display !== 'none') return; // already submitted
+  const open = form.style.display !== 'none';
+  form.style.display = open ? 'none' : 'block';
+  icon.textContent = open ? '▼ Expand' : '▲ Close';
+}
+
+function initFeedback(sopId, sopTitle) {
+  currentFeedbackSopId = sopId;
+  currentFeedbackSopTitle = sopTitle;
+  // Reset toggle to collapsed
+  const form = document.getElementById('sopFeedbackForm');
+  const icon = document.getElementById('fbToggleIcon');
+  if(form) { form.style.display = 'none'; }
+  if(icon) { icon.textContent = '▼ Expand'; }
+
+  document.getElementById('fbComment').value = '';
+  document.getElementById('fbFlat').value = '';
+  document.getElementById('fbName').value = '';
+  document.getElementById('fbBlock').value = '';
+  // identity fields always visible
+  document.getElementById('fbMsg').style.display = 'none';
+  document.getElementById('sopFeedbackForm').style.display = 'block';
+  document.getElementById('sopFeedbackDone').style.display = 'none';
+
+  // Show identity fields immediately
+  // identity fields always visible
+
+
+}
+
+
+
+async function submitFeedback() {
+  const msg = document.getElementById('fbMsg');
+  const comment = document.getElementById('fbComment').value.trim();
+  const flatNo = document.getElementById('fbFlat').value.trim();
+  const name = document.getElementById('fbName').value.trim();
+  const block = document.getElementById('fbBlock').value;
+
+  if(!comment) {
+    msg.style.display = 'block'; msg.style.color = '#dc2626';
+    msg.textContent = 'Please enter a comment before submitting.';
+    return;
+  }
+
+  // block/name/flat are mandatory when comment is provided
+  if(!block || !name || !flatNo) {
+    msg.style.display = 'block'; msg.style.color = '#dc2626';
+    msg.textContent = 'Please fill in Block, Name and Flat No.';
+    return;
+  }
+
+  // Only use sop_id if it's a real UUID (not a local seed ID)
+  const isRealUuid = currentFeedbackSopId && /^[0-9a-f-]{36}$/.test(currentFeedbackSopId);
+  const payload = {
+    sop_id: isRealUuid ? currentFeedbackSopId : null,
+    sop_title: currentFeedbackSopTitle,
+    comment: comment,
+    block: block || null,
+    member_name: name || null,
+    flat_no: flatNo || null
+  };
+
+  if(SUPABASE_URL && SUPABASE_KEY) {
+    try {
+      // Always use anon key for public insert — no auth needed since policy is public
+      const res = await fetch(SUPABASE_URL + '/rest/v1/sop_feedback', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok) {
+        const errText = await res.text();
+        console.error('Feedback insert error:', res.status, errText);
+        msg.style.display = 'block';
+        msg.style.color = '#dc2626';
+        msg.textContent = 'Error saving feedback: ' + (JSON.parse(errText).message || errText);
+        return;
+      }
+    } catch(e) {
+      console.error('Feedback network error:', e);
+      msg.style.display = 'block';
+      msg.style.color = '#dc2626';
+      msg.textContent = 'Network error — please try again.';
+      return;
+    }
+  }
+
+  document.getElementById('sopFeedbackForm').style.display = 'none';
+  document.getElementById('sopFeedbackDone').style.display = 'block';
+}
+
+function saveLocalFeedback(payload) {
+  const existing = JSON.parse(localStorage.getItem('local_feedback') || '[]');
+  existing.push({ ...payload, created_at: new Date().toISOString() });
+  localStorage.setItem('local_feedback', JSON.stringify(existing));
+}
+
+async function loadFeedback() {
+  const el = document.getElementById('feedbackList');
+  if(!el) return;
+  el.innerHTML = '<div class="sop-loading">Loading feedback…</div>';
+
+  let items = [];
+
+  if(SUPABASE_URL && SUPABASE_KEY) {
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/sop_feedback?select=*&order=created_at.desc&limit=50', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const json = await res.json();
+      console.log('Feedback response status:', res.status);
+      console.log('Feedback response:', json);
+      items = Array.isArray(json) ? json : [];
+      if(!Array.isArray(json)) {
+        el.innerHTML = `<div style="font-size:12px;color:#dc2626;padding:8px;background:#fef2f2;border-radius:8px;">
+          Supabase error: ${json.message || json.error || JSON.stringify(json)}<br>
+          <small>Hint: Run the RLS fix SQL in Supabase (see below)</small>
+        </div>
+        <div style="margin-top:12px;background:#1e293b;color:#a5f3fc;border-radius:8px;padding:12px;font-size:11px;font-family:monospace;">
+DROP POLICY IF EXISTS "Auth read feedback" ON sop_feedback;<br>
+CREATE POLICY "Public read feedback" ON sop_feedback FOR SELECT USING (true);
+        </div>`;
+        return;
+      }
+    } catch(e) { 
+      console.error('Feedback fetch error:', e);
+      items = []; 
+    }
+  }
+
+  // Merge in any local feedback
+  const local = JSON.parse(localStorage.getItem('local_feedback') || '[]');
+  items = [...items, ...local].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+  if(!items.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#9ca3af;padding:12px 0;">No feedback yet.</div>';
+    return;
+  }
+
+  // Update dashboard feedback count
+  const dashFb = document.getElementById('dash-feedback-count');
+  if(dashFb) dashFb.textContent = items.length;
+
+  // Group by SOP category (from allSOPs lookup)
+  const catMap = {};
+  allSOPs.forEach(s => { catMap[s.id] = s.category || 'General'; });
+
+  const byCategory = {};
+  items.forEach(i => {
+    const cat = (i.sop_id && catMap[i.sop_id]) || 'General';
+    if(!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push(i);
+  });
+
+  const byTitle = {};
+  items.forEach(i => {
+    const title = i.sop_title || 'Unknown SOP';
+    if(!byTitle[title]) byTitle[title] = [];
+    byTitle[title].push(i);
+  });
+
+  const catColors = ['linear-gradient(135deg,#0369a1,#38bdf8)','linear-gradient(135deg,#059669,#34d399)',
+    'linear-gradient(135deg,#7e22ce,#a855f7)','linear-gradient(135deg,#ea580c,#fb923c)',
+    'linear-gradient(135deg,#0891b2,#22d3ee)','linear-gradient(135deg,#be185d,#f472b6)'];
+
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-size:13px;color:#6b7280;">${items.length} response${items.length!==1?'s':''} · ${Object.keys(byTitle).length} SOP${Object.keys(byTitle).length!==1?'s':''}</div>
+      <button onclick="downloadFeedbackCSV()" style="padding:7px 14px;background:#1e3a5f;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">⬇ Download Excel</button>
+    </div>
+
+    <!-- Category stat cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px;">
+      ${Object.entries(byCategory).map(([cat, catItems], i) => `
+        <div onclick="filterFeedbackByCategory('${cat}')"
+          style="background:${catColors[i%catColors.length]};color:#fff;border-radius:14px;padding:14px;cursor:pointer;text-align:center;transition:transform .15s;" 
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:24px;font-weight:900;">${catItems.length}</div>
+          <div style="font-size:11px;font-weight:700;opacity:.9;margin-top:2px;">${cat}</div>
+        </div>`).join('')}
+    </div>
+
+    <div id="fbSummaryView">
+      ${Object.entries(byTitle).map(([title, fbItems], idx) => `
+        <div onclick="showFeedbackDetail(${idx})" 
+          style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1e3a5f;margin-bottom:3px;">${title}</div>
+            <div style="font-size:11px;color:#6b7280;">${fbItems.length} comment${fbItems.length!==1?'s':''}</div>
+          </div>
+          <div style="font-size:18px;color:#6b7280;">›</div>
+        </div>`).join('')}
+    </div>
+    <div id="fbDetailView" style="display:none;">
+      <button onclick="document.getElementById('fbSummaryView').style.display='block';document.getElementById('fbDetailView').style.display='none';"
+        style="margin-bottom:12px;padding:6px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:12px;cursor:pointer;">← Back to all</button>
+      <div id="fbDetailContent"></div>
+    </div>`;
+
+  el.innerHTML = html;
+  window.fbAllItems = items;
+  window.fbByTitleKeys = Object.keys(byTitle);
+  window.fbByTitle = byTitle;
+}
+
+function showFeedbackDetail(idx) {
+  const title = window.fbByTitleKeys[idx];
+  const fbItems = window.fbByTitle[title] || [];
+  document.getElementById('fbSummaryView').style.display = 'none';
+  document.getElementById('fbDetailView').style.display = 'block';
+  document.getElementById('fbDetailContent').innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:#1e3a5f;margin-bottom:12px;">${title}</div>
+    ${fbItems.map(i => `
+      <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:12px;color:#374151;margin-bottom:6px;">"${i.comment || '—'}"</div>
+        <div style="font-size:11px;color:#9ca3af;">
+          ${[i.block, i.member_name, i.flat_no ? 'Flat '+i.flat_no : ''].filter(Boolean).join(' · ')}
+          · ${new Date(i.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+        </div>
+      </div>`).join('')}`;
+}
+
+function filterFeedbackByCategory(cat) {
+  const items = (window.fbAllItems || []).filter(i => {
+    const catMap = {};
+    allSOPs.forEach(s => { catMap[s.id] = s.category || 'General'; });
+    return ((i.sop_id && catMap[i.sop_id]) || 'General') === cat;
+  });
+  // Group filtered by title
+  const byTitle = {};
+  items.forEach(i => {
+    const title = i.sop_title || 'Unknown SOP';
+    if(!byTitle[title]) byTitle[title] = [];
+    byTitle[title].push(i);
+  });
+  window.fbByTitleKeys = Object.keys(byTitle);
+  window.fbByTitle = byTitle;
+
+  document.getElementById('fbSummaryView').innerHTML = Object.entries(byTitle).map(([title, fbItems], idx) => `
+    <div onclick="showFeedbackDetail(${idx})"
+      style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1e3a5f;margin-bottom:3px;">${title}</div>
+        <div style="font-size:11px;color:#6b7280;">${fbItems.length} comment${fbItems.length!==1?'s':''}</div>
+      </div>
+      <div style="font-size:18px;color:#6b7280;">›</div>
+    </div>`).join('');
+}
+
+function downloadFeedbackCSV() {
+  const items = window.fbAllItems || [];
+  if(!items.length) return;
+  const headers = ['SOP Title','Comment','Block','Name','Flat No','Date'];
+  const rows = items.map(i => [
+    i.sop_title || '',
+    (i.comment || '').replace(/,/g,'；'),
+    i.block || '',
+    i.member_name || '',
+    i.flat_no || '',
+    new Date(i.created_at).toLocaleDateString('en-IN')
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'SOP_Feedback_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ===== Keep Alive =====
+(function () {
+    const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000;
+
+    async function keepAlive() {
+        try {
+            if (typeof supabase === "undefined" || !supabase) return;
+
+            await supabase
+                .from("sops")
+                .select("id")
+                .limit(1);
+
+            console.log("Keep Alive:", new Date().toLocaleTimeString());
+        } catch (e) {
+            console.log("Keep Alive Error:", e.message);
+        }
+    }
+
+    setTimeout(keepAlive, 30000);
+    setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
+})();
+
+</script>
+</body>
+</html>
